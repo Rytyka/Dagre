@@ -1,0 +1,375 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<title>Dagre D3 Renderer Demo</title>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://cpettitt.github.io/project/dagre-d3/v0.3.2/dagre-d3.min.js"></script>
+
+<style>
+
+  body {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+    background: #333;
+    word-wrap: break-word;
+
+  }
+
+
+  @-webkit-keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+
+    25%, 75% {
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+
+    25%, 75% {
+      opacity: 0.2;
+    }
+  }
+
+  .warn {
+    -webkit-animation-duration: 5s;
+    animation-duration: 5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+  }
+
+  .live.map {
+    width: 100%;
+    height: 100%;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .live.map text {
+    font-weight: 300;
+    font-size: 12px;
+  }
+
+  .live.map .node rect {
+    stroke-width: 1.5px;
+    stroke: #bbb;
+    fill: #666;
+  }
+
+  .live.map .status {
+    height: 100%;
+    width: 15px;
+    display: block;
+    float: left;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-right: 4px;
+  }
+
+  .live.map .success .status {
+    background-color: #7f7; //green
+  }
+
+  .live.map .unstable .status {
+    background-color: #ffed68; //mustard
+  }
+
+  .live.map .fail .status {
+    background-color: #f77; //red
+  }
+
+/*   .live.map .warn .queue {
+  color: #f77;
+} */
+
+  .warn {
+    -webkit-animation-name: flash;
+    animation-name: flash;
+  }
+
+  .live.map .consumers {
+    margin-right: 2px;
+  }
+
+  .live.map .consumers,
+  .live.map .name {
+    margin-top: 4px;
+  }
+
+  .live.map .consumers:after {
+    content: "x";
+  }
+
+  .live.map .queue {
+    display: block;
+    float: left;
+    width: 130px;
+    height: 20px;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .live.map .node g div {
+    width: 300px;
+    height: 40px;
+    color: #fff;
+  }
+
+  .live.map .node g div span.consumers {
+    display: inline-block;
+    width: 20px;
+  }
+
+  .live.map .edgeLabel text {
+    width: 50px;
+    fill: #fff;
+  }
+
+  .live.map .edgePath path {
+    stroke: #999;
+    stroke-width: 1.5px;
+    fill: #999;
+  }
+</style>
+
+<body>
+<div class="live map">
+  <svg><g/></svg>
+</div>
+
+<script>
+  var nodes_PFV=
+[
+{key: 0, name: "SDC_BBI" , CL: 0},
+{key: 1, name: "BDC_BBI" , CL: 3},
+{key: 2, name: "UP_BUILD_NR" , CL: 2},
+{key: 3, name: "RB_BUILD_NR" , CL: 2},
+{key: 4, name: "NBC_NR" , CL: 3},
+{key: 5, name: "UP_BUILD_VeRC" , CL: 2},
+{key: 6, name: "RB_BUILD_VeRC" , CL: 2},
+{key: 7, name: "NBC_VeRC" , CL: 3},
+{key: 8, name: "UP_BUILD_MSRBS" , CL: 2},
+{key: 9, name: "RB_BUILD_MSRBS" , CL: 2},
+{key: 10, name: "NBC_MSRBS" , CL: 3},
+{key: 11, name: "Wait_For_Test_FOCUS_MSRBS" , CL: 3.5},
+{key: 12, name: "NBV_MSRBS_WCDMA_QA_Perforamnce" , CL: 4},
+{key: 13, name: "NBV_MSRBS_GSM_QA_Functionality" , CL: 4},
+{key: 14, name: "NBV_MSRBS_GSM_QA_Stability" , CL: 4},
+{key: 15, name: "NBV_MSRBS_GSM_QA_Configuration" , CL: 4},
+{key: 16, name: "NBV_MSRBS_GSM_QA_Upgrade" , CL: 4},
+{key: 17, name: "NBV_MSRBS_LTE_QA_Robustness" , CL: 4},
+{key: 18, name: "NBV_MSRBS_LTE_QA_Performance" , CL: 4},
+{key: 19, name: "NBV_MSRBS_LTE_QA_Capacity" , CL: 4},
+{key: 20, name: "NBV_MSRBS_LTE_QA_Functionality" , CL: 4},
+{key: 21, name: "NBV_MSRBS_LTE_QA_Stability" , CL: 4},
+{key: 22, name: "NBV_MSRBS_LTE_QA_Configuration" , CL: 4},
+{key: 23, name: "NBV_MSRBS_LTE_QA_Upgrade" , CL: 4},
+{key: 24, name: "Evaluation_MS_CL4" , CL: 4}];
+
+var edges_PFV=
+[{from: 0,to: 1},
+{from: 1, to: 2},
+{from: 2, to: 3},
+{from: 3, to: 4},
+{from: 1, to: 5},
+{from: 5, to: 6},
+{from: 6, to: 7},
+{from: 1, to: 8},
+{from: 8, to: 9},
+{from: 9, to: 10},
+{from: 10,to: 11},
+{from: 11,to: 12},
+{from: 11,to: 13},
+{from: 11,to: 14},
+{from: 11,to: 15},
+{from: 11,to: 16},
+{from: 11,to: 17},
+{from: 11,to: 18},
+{from: 11,to: 19},
+{from: 11,to: 20},
+{from: 11,to: 21},
+{from: 11,to: 22},
+{from: 11,to: 23},
+{from: 12,to: 24},
+{from: 13,to: 24},
+{from: 14,to: 24},
+{from: 15,to: 24},
+{from: 16,to: 24},
+{from: 17,to: 24},
+{from: 18,to: 24},
+{from: 19,to: 24},
+{from: 20,to: 24},
+{from: 21,to: 24},
+{from: 22,to: 24},
+{from: 23,to: 24}];
+
+ /* var workers = {
+    //0
+    "SDC_BBI": {
+      "consumers": 2,
+      "count": 20
+    },
+    //0->1
+    "BDC_BBI": {
+      "consumers": 1,
+      "count": 1,
+      "inputQueue": "SDC_BBI",
+      "inputThroughput": 50
+    },
+    //1->2
+    "UP_BUILD_NR": {
+      "consumers": 1,
+      "count": 0,
+      "inputQueue": "BDC_BBI",
+      "inputThroughput": 50
+    },
+    //1->5
+    "UP_BUILD_VeRC": {
+      "consumers": 4,
+      "count": 9900,
+      "inputQueue": "BDC_BBI",
+      "inputThroughput": 50
+    },
+    //2->3
+     "RB_BUILD_NR": {
+      "consumers": 4,
+      "count": 9900,
+      "inputQueue": "UP_BUILD_NR",
+      "inputThroughput": 50
+    },
+    //3->4
+    "NBC_NR": {
+      "consumers": 2,
+      "count": 1,
+      "inputQueue": "RB_BUILD_NR",
+      "inputThroughput": 50
+    }
+
+  };*/
+
+  // Set up zoom support
+  var svg = d3.select("svg"),
+      inner = svg.select("g"),
+      zoom = d3.behavior.zoom().on("zoom", function() {
+        inner.attr("transform", "translate(" + d3.event.translate + ")" +
+                                    "scale(" + d3.event.scale + ")");
+      });
+  svg.call(zoom);
+
+  var render = new dagreD3.render();
+
+  // Left-to-right layout
+  var g = new dagreD3.graphlib.Graph();
+  g.setGraph({
+    nodesep: 70,
+    ranksep: 50,
+    rankdir: "LR",
+    marginx: 20,
+    marginy: 20
+  });
+
+  function draw(isUpdate) {
+    for (var id in nodes_PFV) {
+     // var worker = workers[id];
+      var event = nodes_PFV[id];
+      var status_arr=["success", "unstable", "fail"];
+      var status=status_arr[Math.floor(Math.random()*3)];
+      var className = status;
+      if (status=="fail") {
+        className += " warn";
+      }
+      className += " clickable";
+      var html = "<div>";
+      html += "<span class=status></span>";
+      //html += "<span class=consumers>"+worker.consumers+"</span>";
+      html += "<span class=name>"+event.name+"</span>";
+      html += "<span class=queue><span class=counter>"+event.CL+"</span></span>";
+      html += "</div>";
+      g.setNode(event.key, {
+        labelType: "html",
+        label: html,
+        rx: 5,
+        ry: 5,
+        padding: 0,
+        class: className
+      });
+/*
+      if (worker.inputQueue) {
+        g.setEdge(worker.inputQueue, id, {
+          label: worker.inputThroughput + "/s",
+          width: 40
+        });
+      }*/
+    }
+
+    for (var id in edges_PFV){
+      var edge=edges_PFV[id];
+      g.setEdge(edge.from,edge.to,{
+        label: Math.ceil(Math.random()*100) + " min",
+         width:40
+       });
+    }
+
+    inner.call(render, g);
+
+    inner.selectAll(".clickable:not(.update)").on("click", function(d) {
+      alert("You clicked on " + d);
+    })
+
+    // Zoom and scale to fit
+    var zoomScale = zoom.scale();
+    var graphWidth = g.graph().width + 80;
+    var graphHeight = g.graph().height + 40;
+    var width = parseInt(svg.style("width").replace(/px/, ""));
+    var height = parseInt(svg.style("height").replace(/px/, ""));
+    zoomScale = Math.min(width / graphWidth, height / graphHeight);
+    var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
+    zoom.translate(translate);
+    zoom.scale(zoomScale);
+    zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
+  }
+/*
+  // Do some mock queue status updates
+  setInterval(function() {
+    var stoppedWorker1Count = workers["elasticsearch-writer"].count;
+    var stoppedWorker2Count = workers["meta-enricher"].count;
+    console.log(workers);
+    for (var id in workers) {
+      workers[id].count = Math.ceil(Math.random() * 3);
+      if (workers[id].inputThroughput) workers[id].inputThroughput = Math.ceil(Math.random() * 250);
+    }
+    workers["elasticsearch-writer"].count = stoppedWorker1Count + Math.ceil(Math.random() * 100);
+    workers["meta-enricher"].count = stoppedWorker2Count + Math.ceil(Math.random() * 100);
+    draw(true);
+  }, 1000);
+
+  // Do a mock change of worker configuration
+  setInterval(function() {
+    workers["elasticsearch-monitor"] = {
+      "consumers": 0,
+      "count": 0,
+      "inputQueue": "elasticsearch-writer",
+      "inputThroughput": 50
+    }
+  }, 5000);*/
+
+  draw();
+</script>
