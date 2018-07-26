@@ -1,0 +1,342 @@
+<!doctype html>
+
+<meta charset="utf-8">
+<title>Dagre D3 Renderer Demo</title>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://cpettitt.github.io/project/dagre-d3/v0.3.2/dagre-d3.min.js"></script>
+
+<style>
+  .clusters rect {
+  fill: #00ffd0;
+  stroke: #999;
+  stroke-width: 1.5px;
+  opacity:0.001;
+}
+  body {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+    background: #333;
+    word-wrap: break-word;
+
+  }
+
+
+  @-webkit-keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+
+    25%, 75% {
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+
+    25%, 75% {
+      opacity: 0.2;
+    }
+  }
+
+  .warn {
+    -webkit-animation-duration: 5s;
+    animation-duration: 5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+  }
+
+  .live.map {
+    width: 100%;
+    height: 100%;
+
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .live.map text {
+    font-weight: 300;
+    font-size: 12px;
+  }
+
+  .live.map .node rect {
+    stroke-width: 1.5px;
+    stroke: #bbb;
+    fill: #666;
+  }
+
+  .live.map .status {
+    height: 100%;
+    width: 15px;
+    display: block;
+    float: left;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-right: 4px;
+  }
+
+  .live.map .success .status {
+    background-color: #7f7; //green
+  }
+
+  .live.map .unstable .status {
+    background-color: #ffed68; //mustard
+  }
+
+  .live.map .fail .status {
+    background-color: #f77; //red
+  }
+
+  .warn {
+    -webkit-animation-name: flash;
+    animation-name: flash;
+  }
+
+  .live.map .queue {
+    display: block;
+    float: left;
+    width: 130px;
+    height: 20px;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .live.map .node g div {
+    width: 300px;
+    height: 40px;
+    color: #fff;
+  }
+
+  .live.map .edgeLabel text {
+    width: 50px;
+    fill: #fff;
+  }
+
+  .live.map .edgePath path {
+    stroke: #999;
+    stroke-width: 1.5px;
+    fill: #999;
+  }
+</style>
+
+<body>
+<div class="live map">
+  <svg><g/></svg>
+</div>
+
+<script>
+var nodes_PFV=[{key: 0, name: "SDC_BBI" , CL: 0},
+{key: 1, name: "BDC_BBI" , CL: 2},
+{key: 2, name: "UP_BUILD_NR" , CL: 2},
+{key: 3, name: "RB_BUILD_NR" , CL: 2},
+{key: 4, name: "NBC_NR" , CL: 3},
+{key: 5, name: "UP_BUILD_VeRC" , CL: 2},
+{key: 6, name: "RB_BUILD_VeRC" , CL: 2},
+{key: 7, name: "NBC_VeRC" , CL: 3},
+{key: 8, name: "UP_BUILD_MSRBS" , CL: 2},
+{key: 9, name: "RB_BUILD_MSRBS" , CL: 2},
+{key: 10, name: "NBC_MSRBS" , CL: 3},
+{key: 11, name: "Wait_For_Test_FOCUS_MSRBS" , CL: 3.5},
+{key: 12, name: "NBV_MSRBS_WCDMA_QA_Perforamnce" , CL: 4},
+{key: 13, name: "NBV_MSRBS_GSM_QA_Functionality" , CL: 4},
+{key: 14, name: "NBV_MSRBS_GSM_QA_Stability" , CL: 4},
+{key: 15, name: "NBV_MSRBS_GSM_QA_Configuration" , CL: 4},
+{key: 16, name: "NBV_MSRBS_GSM_QA_Upgrade" , CL: 4},
+{key: 17, name: "NBV_MSRBS_LTE_QA_Robustness" , CL: 4},
+{key: 18, name: "NBV_MSRBS_LTE_QA_Performance" , CL: 4},
+{key: 19, name: "NBV_MSRBS_LTE_QA_Capacity" , CL: 4},
+{key: 20, name: "NBV_MSRBS_LTE_QA_Functionality" , CL: 4},
+{key: 21, name: "NBV_MSRBS_LTE_QA_Stability" , CL: 4},
+{key: 22, name: "NBV_MSRBS_LTE_QA_Configuration" , CL: 4},
+{key: 23, name: "NBV_MSRBS_LTE_QA_Upgrade" , CL: 4},
+{key: 24, name: "Evaluation_MS_CL4" , CL: 4},
+{key: 25, name: "SDC_NCMAIN" , CL: 1},
+{key: 26, name: "BDC_FRUM_BB_T" , CL: 2},
+{key: 27, name: "BDC_AIS_GFF_BB_T", CL: 2},
+{key: 28, name: "BDC_ARCHSUPP_PLAB_BB_T", CL: 2},
+{key: 29, name: "BDC_ARCHSUPP_SFA_BB_T", CL: 2},
+{key: 30, name: "BDC_RBSTCUNC_BB_T", CL: 2},
+{key: 31, name: "NBC_BB_T" , CL: 3},
+{key: 32, name: "WAIT_FOR_TEST_FOCUS_BB_T", CL: 3},
+{key: 33, name: "NBV_CL4_BB_T_QA_ROBUSTNESS", CL: 4},
+{key: 34, name: "NBV_CL4_BB_T_QA_PERFORMANCE", CL: 4},
+{key: 35, name: "NBV_CL4_BB_T_QA_FUNCTIONALITY", CL: 4},
+{key: 36, name: "NBV_CL4_BB_T_QA_CONFIGURE_OAM", CL: 4},
+{key: 37, name: "NBV_CL4_BB_T_QA_CONFIGURE_UPGRADE", CL: 4},
+{key: 38, name:"UP_BUILD_BB_T", CL:2}];
+
+var edges_PFV=
+[{from: 0, to: 1},
+{from: 1, to: 2},
+{from: 2, to: 3},
+{from: 3, to: 4},
+{from: 1, to: 5},
+{from: 5, to: 6},
+{from: 6, to: 7},
+{from: 1, to: 8},
+{from: 8, to: 9},
+{from: 9, to: 10},
+{from: 10, to: 11},
+{from: 11, to: 12},
+{from: 11, to: 13},
+{from: 11, to: 14},
+{from: 11, to: 15},
+{from: 11, to: 16},
+{from: 11, to: 17},
+{from: 11, to: 18},
+{from: 11, to: 19},
+{from: 11, to: 20},
+{from: 11, to: 21},
+{from: 11, to: 22},
+{from: 11, to: 23},
+{from: 12, to: 24},
+{from: 13, to: 24},
+{from: 14, to: 24},
+{from: 15, to: 24},
+{from: 16, to: 24},
+{from: 17, to: 24},
+{from: 18, to: 24},
+{from: 19, to: 24},
+{from: 20, to: 24},
+{from: 21, to: 24},
+{from: 22, to: 24},
+{from: 23, to: 24},
+{from: 25, to: 26},
+{from: 25, to: 27},
+{from: 25, to: 28},
+{from: 25, to: 29},
+{from: 25, to: 30},
+{from: 30, to: 31},
+{from: 31, to: 32},
+{from: 32, to: 33},
+{from: 32, to: 34},
+{from: 32, to: 35},
+{from: 32, to: 36},
+{from: 32, to: 37},
+{from: 38, to: 31 }];
+
+
+  // Set up zoom support
+  var svg = d3.select("svg"),
+      inner = svg.select("g"),
+      zoom = d3.behavior.zoom().on("zoom", function() {
+        inner.attr("transform", "translate(" + d3.event.translate + ")" +
+                                    "scale(" + d3.event.scale + ")");
+      });
+  svg.call(zoom);
+
+  var render = new dagreD3.render();
+
+  // Left-to-right layout
+  var g = new dagreD3.graphlib.Graph({compound: true});
+  g.setGraph({
+    //ranker:"longest-path",
+    //align: "DL",
+    nodesep: 50,
+    ranksep: 70,
+    rankdir: "LR",
+    marginx: 20,
+    marginy: 20
+  });
+
+  function draw(isUpdate) {
+    //groups
+    g.setNode('SDC', {label: 'SDC', clusterLabelPos: 'top', style: 'fill: #ffd47f'});
+    g.setNode('BDC', {label: 'BDC',clusterLabelPos: 'top', style: 'fill: #5f9488'});
+    g.setNode('UP_BUILD', {label: 'UP_BUILD', clusterLabelPos: 'top', style: 'fill: #ffd47f'});
+    g.setNode('RB_BUILD', {label: 'RB_BUILD',clusterLabelPos: 'top', style: 'fill: #5f9488'});
+    g.setNode('NBC', {label: 'NBC', clusterLabelPos: 'top', style: 'fill: #ffd47f'});
+    g.setNode('NBV', {label: 'NBV',clusterLabelPos: 'top', style: 'fill: #5f9488'});
+
+    //nodes
+    for (var id in nodes_PFV) {
+      var event = nodes_PFV[id];
+      var status_arr=["success", "unstable", "fail"];
+      var status=status_arr[Math.floor(Math.random()*3)];
+      var className = status;
+      if (status=="fail") {
+        className += " warn";
+      }
+      className += " clickable";
+      var html = "<div>";
+      html += "<span class=status></span>";
+      html += "<span class=name>"+event.name+"</span>";
+      html += "<span class=queue>"+event.CL+"</span>";
+      html += "</div>";
+      g.setNode(event.key, {
+        labelType: "html",
+        label: html,
+        rx: 5,
+        ry: 5,
+        padding: 0,
+        class: className
+      });
+
+      if(event.name.includes("BDC")){
+        g.setParent(event.key, 'BDC');
+      }
+      else if(event.name.includes("SDC")){
+        g.setParent(event.key, 'SDC');
+      }
+      else if(event.name.includes("UP_BUILD")){
+        g.setParent(event.key, 'UP_BUILD');
+      }
+      else if(event.name.includes("RB_BUILD")){
+        g.setParent(event.key, 'RB_BUILD');
+      }
+      else if(event.name.includes("NBC")){
+        g.setParent(event.key, 'NBC');
+      }
+      else if(event.name.includes("NBV")){
+        g.setParent(event.key, 'NBV');
+      }
+
+    }
+
+    //edges
+    for (var id in edges_PFV){
+      var edge=edges_PFV[id];
+      g.setEdge(edge.from,edge.to,{
+        label: Math.ceil(Math.random()*100) + " min",
+         width:40,
+         curve: d3.curveBasis
+       });
+    }
+
+    inner.call(render, g);
+
+    inner.selectAll(".clickable:not(.update)").on("click", function(d) {
+      alert("You clicked on " + d);
+    })
+
+    // Zoom and scale to fit
+    var zoomScale = zoom.scale();
+    var graphWidth = g.graph().width + 80;
+    var graphHeight = g.graph().height + 40;
+    var width = parseInt(svg.style("width").replace(/px/, ""));
+    var height = parseInt(svg.style("height").replace(/px/, ""));
+    zoomScale = Math.min(width / graphWidth, height / graphHeight);
+    var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
+    zoom.translate(translate);
+    zoom.scale(zoomScale);
+    zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
+  }
+
+
+  draw();
+</script>
