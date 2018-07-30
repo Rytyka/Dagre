@@ -1,18 +1,18 @@
+<!-- This file contains Version 2.0 + alignment based on job type + Updated the dagre-library commands for v5 + d3v4 -->
+
 <!doctype html>
 
 <meta charset="utf-8">
 <title>Dagre D3 Renderer Demo</title>
 
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="http://cpettitt.github.io/project/dagre-d3/v0.3.2/dagre-d3.min.js"></script>
+<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<!-- <script src="http://cpettitt.github.io/project/dagre-d3/v0.3.2/dagre-d3.min.js"></script>
+ -->
+ <script src="../dagre-d3-0.5.0/dagre-d3-0.5.0/build/dist/dagre-d3.min.js"></script>
+
 
 <style>
-  .clusters rect {
-  fill: #00ffd0;
-  stroke: #999;
-  stroke-width: 1.5px;
-  opacity:0.001;
-}
+
   body {
     position: fixed;
     top: 0;
@@ -21,9 +21,9 @@
     right: 0;
     margin: 0;
     padding: 0;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+    font-family: "Ericsson Hilda", Helvetica, Arial, sans-serif;
     background: #333;
-    word-wrap: break-word;
+    word-break: break-all;
 
   }
 
@@ -71,8 +71,16 @@
 
   .live.map text {
     font-weight: 300;
-    font-size: 12px;
+    font-size: 18px;
+    text-align: center;
   }
+
+   .clusters rect {
+  fill: #00ffd0;
+  stroke: #999;
+  stroke-width: 1.5px;
+  opacity:0.001;
+}
 
   .live.map .node rect {
     stroke-width: 1.5px;
@@ -87,11 +95,17 @@
     float: left;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
-    margin-right: 4px;
-  }
+  /*  margin-right:4px;*/
+    }
 
   .live.map .success .status {
     background-color: #7f7; //green
+  }
+
+  .live.map .node .label .name{
+    text-align:center;
+    display: block;
+    word-break:break-all;
   }
 
   .live.map .unstable .status {
@@ -102,19 +116,32 @@
     background-color: #f77; //red
   }
 
+    .live.map .source .status {
+    visibility: hidden;
+     }
   .warn {
     -webkit-animation-name: flash;
     animation-name: flash;
   }
 
   .live.map .queue {
-    display: block;
+/*    display: block;
+*/
+    display:none;
     float: left;
     width: 130px;
     height: 20px;
     font-size: 12px;
     margin-top: 2px;
   }
+/*   .live.map .node.source g div {
+  width: 100px;
+  height: 90px;
+  color: #fff;
+  background-image: url('images/try.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+} */
 
   .live.map .node g div {
     width: 300px;
@@ -122,6 +149,9 @@
     color: #fff;
   }
 
+  .live.map .clusters .label text{
+    opacity:0.001;
+  }
   .live.map .edgeLabel text {
     width: 50px;
     fill: #fff;
@@ -178,7 +208,8 @@ var nodes_PFV=[{key: 0, name: "SDC_BBI" , CL: 0},
 {key: 35, name: "NBV_CL4_BB_T_QA_FUNCTIONALITY", CL: 4},
 {key: 36, name: "NBV_CL4_BB_T_QA_CONFIGURE_OAM", CL: 4},
 {key: 37, name: "NBV_CL4_BB_T_QA_CONFIGURE_UPGRADE", CL: 4},
-{key: 38, name:"UP_BUILD_BB_T", CL:2}];
+{key: 38, name:"UP_BUILD_BB_T", CL:2},
+{key: 39, name: "SOURCE_BBI", CL:0}];
 
 var edges_PFV=
 [{from: 0, to: 1},
@@ -228,15 +259,15 @@ var edges_PFV=
 {from: 32, to: 35},
 {from: 32, to: 36},
 {from: 32, to: 37},
-{from: 38, to: 31 }];
+{from: 38, to: 31 },
+{from: 39, to: 0 }];
 
 
   // Set up zoom support
   var svg = d3.select("svg"),
       inner = svg.select("g"),
-      zoom = d3.behavior.zoom().on("zoom", function() {
-        inner.attr("transform", "translate(" + d3.event.translate + ")" +
-                                    "scale(" + d3.event.scale + ")");
+      zoom = d3.zoom().on("zoom", function() {
+        inner.attr("transform", d3.event.transform);
       });
   svg.call(zoom);
 
@@ -275,16 +306,20 @@ var edges_PFV=
       className += " clickable";
       var html = "<div>";
       html += "<span class=status></span>";
-      html += "<span class=name>"+event.name+"</span>";
-      html += "<span class=queue>"+event.CL+"</span>";
+      html += "<div class=name>"+event.name+"</div>";
+    //  html += "<span class=queue>"+event.CL+"</span>";
       html += "</div>";
+      var rx,ry;
+      if(event.name.includes("SOURCE")) {className+=" source"; rx=880; ry=880;  }
+      else {rx=5; ry=5;}
       g.setNode(event.key, {
         labelType: "html",
         label: html,
-        rx: 5,
-        ry: 5,
+        rx: rx,
+        ry: ry,
         padding: 0,
-        class: className
+        class: className,
+        shape: "rect"
       });
 
       if(event.name.includes("BDC")){
@@ -320,12 +355,12 @@ var edges_PFV=
 
     inner.call(render, g);
 
-    inner.selectAll(".clickable:not(.update)").on("click", function(d) {
+/*    inner.selectAll(".clickable:not(.update)").on("click", function(d) {
       alert("You clicked on " + d);
-    })
+    })*/
 
     // Zoom and scale to fit
-    var zoomScale = zoom.scale();
+/*    var zoomScale = zoom.scale();
     var graphWidth = g.graph().width + 80;
     var graphHeight = g.graph().height + 40;
     var width = parseInt(svg.style("width").replace(/px/, ""));
@@ -334,9 +369,20 @@ var edges_PFV=
     var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
     zoom.translate(translate);
     zoom.scale(zoomScale);
-    zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));
+    zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));*/
+
+    var graphWidth = g.graph().width + 80;
+    var graphHeight = g.graph().height + 40;
+    var width = parseInt(svg.style("width").replace(/px/, ""));
+    var height = parseInt(svg.style("height").replace(/px/, ""));
+    var zoomScale = Math.min(width / graphWidth, height / graphHeight);
+    var translateX = (width / 2) - ((graphWidth * zoomScale) / 2)
+    var translateY = (height / 2) - ((graphHeight * zoomScale) / 2);
+    console.log(translateX+","+translateY+","+zoomScale);
+    var svgZoom = isUpdate ? svg.transition().duration(500) : svg;
+    svgZoom.call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(zoomScale));
   }
 
 
-  draw();
+  document.addEventListener("DOMContentLoaded", draw);
 </script>
