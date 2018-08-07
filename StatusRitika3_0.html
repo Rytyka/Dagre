@@ -1,3 +1,4 @@
+
 <!-- This file contains Version 2.0 + alignment based on job type + Updated the dagre-library commands for v5 + d3v4 -->
 
 <!doctype html>
@@ -9,6 +10,8 @@
 <!-- <script src="http://cpettitt.github.io/project/dagre-d3/v0.3.2/dagre-d3.min.js"></script>
  -->
  <script src="../dagre-d3-0.5.0/dagre-d3-0.5.0/build/dist/dagre-d3.min.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+ <link rel="stylesheet" href="cssmenu/styles.css">
 
 
 <style>
@@ -55,6 +58,10 @@
     animation-fill-mode: both;
     -webkit-animation-iteration-count: 2;
     animation-iteration-count: 2;
+  }
+
+  .fade{
+    opacity: 0.05;
   }
 
   .live.map {
@@ -119,6 +126,9 @@
     .live.map .source .status {
     visibility: hidden;
      }
+/*      .live.map .MSRBS .status, .live.map .MSRBS .name{
+ opacity: 0.1;
+} */
   .warn {
     -webkit-animation-name: flash;
     animation-name: flash;
@@ -155,6 +165,7 @@
   .live.map .edgeLabel text {
     width: 50px;
     fill: #fff;
+    color: #fff;
   }
 
   .live.map .edgePath path {
@@ -162,54 +173,112 @@
     stroke-width: 1.5px;
     fill: #999;
   }
+
+
+  .ebSystemBar-topMenuName {
+    display: inline-block;
+    padding: 0 5px 0 40px;
+    margin: 0;
+    line-height: 40px;
+    font-size: 16.8px;
+    color: #0C0C0C;
+  }
+  .ebSystemBara {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    z-index: 1500;
+    border-top: 4px solid #0066b3;
+    background-color: #0C0C0C;
+  }
+
+  .headingtextcolor{
+    font-size: 16.8px;
+    color: #FFFFFF;
+  }
+ /*  .MSRBS rect, .MSRBS.status, .edgePath.MSRBS path,marker{
+   opacity: 0.1;
+ } */
+
 </style>
 
+<head>
+ <div class="ebSystemBara">
+      <div class="ebSystemBar-logo"></div>
+      <div class="ebSystemBar-topMenuName">
+          <a class="headingtextcolor"> <b>CI Flow Visualization</b></a>
+          <select id="ran" style="width: 300px; margin: 0 200px;">
+          <option value="BASEBAND-T" id="BASEBAND-T">BASEBAND-T</option>
+          <option value="EMSRBSC2" id="EMSRBSC2">EMSRBSC2</option>
+          <option value="G3" id="G3">G3</option>
+          <option value="MSRBS" id="MSRBS">MSRBS</option>
+          <option value="NR" id="NR">NR</option>
+          <option value="TIF" id="TIF">TIF</option>
+          <option value="VRAN" id="VRAN">VRAN</option>
+          <option value="VRAN2_0" id="VRAN2_0">VRAN2_0</option>
+          <option value="VTF" id="VTF">VTF</option></select>
+      </div>
+
+  </div>
+</head>
+
 <body>
+<div class="top-menu"></div>
 <div class="live map">
   <svg><g/></svg>
 </div>
 
+
 <script>
-var nodes_PFV=[{key: 0, name: "SDC_BBI" , CL: 0},
-{key: 1, name: "BDC_BBI" , CL: 2},
-{key: 2, name: "UP_BUILD_NR" , CL: 2},
-{key: 3, name: "RB_BUILD_NR" , CL: 2},
-{key: 4, name: "NBC_NR" , CL: 3},
-{key: 5, name: "UP_BUILD_VeRC" , CL: 2},
-{key: 6, name: "RB_BUILD_VeRC" , CL: 2},
-{key: 7, name: "NBC_VeRC" , CL: 3},
-{key: 8, name: "UP_BUILD_MSRBS" , CL: 2},
-{key: 9, name: "RB_BUILD_MSRBS" , CL: 2},
-{key: 10, name: "NBC_MSRBS" , CL: 3},
-{key: 11, name: "Wait_For_Test_FOCUS_MSRBS" , CL: 3.5},
-{key: 12, name: "NBV_MSRBS_WCDMA_QA_Perforamnce" , CL: 4},
-{key: 13, name: "NBV_MSRBS_GSM_QA_Functionality" , CL: 4},
-{key: 14, name: "NBV_MSRBS_GSM_QA_Stability" , CL: 4},
-{key: 15, name: "NBV_MSRBS_GSM_QA_Configuration" , CL: 4},
-{key: 16, name: "NBV_MSRBS_GSM_QA_Upgrade" , CL: 4},
-{key: 17, name: "NBV_MSRBS_LTE_QA_Robustness" , CL: 4},
-{key: 18, name: "NBV_MSRBS_LTE_QA_Performance" , CL: 4},
-{key: 19, name: "NBV_MSRBS_LTE_QA_Capacity" , CL: 4},
-{key: 20, name: "NBV_MSRBS_LTE_QA_Functionality" , CL: 4},
-{key: 21, name: "NBV_MSRBS_LTE_QA_Stability" , CL: 4},
-{key: 22, name: "NBV_MSRBS_LTE_QA_Configuration" , CL: 4},
-{key: 23, name: "NBV_MSRBS_LTE_QA_Upgrade" , CL: 4},
-{key: 24, name: "Evaluation_MS_CL4" , CL: 4},
-{key: 25, name: "SDC_NCMAIN" , CL: 1},
-{key: 26, name: "BDC_FRUM_BB_T" , CL: 2},
-{key: 27, name: "BDC_AIS_GFF_BB_T", CL: 2},
-{key: 28, name: "BDC_ARCHSUPP_PLAB_BB_T", CL: 2},
-{key: 29, name: "BDC_ARCHSUPP_SFA_BB_T", CL: 2},
-{key: 30, name: "BDC_RBSTCUNC_BB_T", CL: 2},
-{key: 31, name: "NBC_BB_T" , CL: 3},
-{key: 32, name: "WAIT_FOR_TEST_FOCUS_BB_T", CL: 3},
-{key: 33, name: "NBV_CL4_BB_T_QA_ROBUSTNESS", CL: 4},
-{key: 34, name: "NBV_CL4_BB_T_QA_PERFORMANCE", CL: 4},
-{key: 35, name: "NBV_CL4_BB_T_QA_FUNCTIONALITY", CL: 4},
-{key: 36, name: "NBV_CL4_BB_T_QA_CONFIGURE_OAM", CL: 4},
-{key: 37, name: "NBV_CL4_BB_T_QA_CONFIGURE_UPGRADE", CL: 4},
-{key: 38, name:"UP_BUILD_BB_T", CL:2},
-{key: 39, name: "SOURCE_BBI", CL:0}];
+  //top navigation bar
+
+ // $(".top-menu").load("cssmenu/menu.html");
+
+
+var clusters=["BDC","SDC","UP_BUILD","RB_BUILD","NBC","NBV"];
+var products=["MSRBS","EMSRBSC2","VRAN","VTF","NR","BASEBAND-T"];
+
+var nodes_PFV=
+[{key: 0, name: "SDC_BBI" , CL: 0, product: ["MSRBS"]},
+{key: 1, name: "BDC_BBI" , CL: 2, product: ["MSRBS"]},
+{key: 2, name: "UP_BUILD_NR" , CL: 2, product: ["NR"]},
+{key: 3, name: "RB_BUILD_NR" , CL: 2, product: ["NR"]},
+{key: 4, name: "NBC_NR" , CL: 3, product: ["NR"]},
+{key: 5, name: "UP_BUILD_VeRC" , CL: 2, product: [""]},
+{key: 6, name: "RB_BUILD_VeRC" , CL: 2, product: [""]},
+{key: 7, name: "NBC_VeRC" , CL: 3, product: [""]},
+{key: 8, name: "UP_BUILD_MSRBS" , CL: 2, product: ["MSRBS"]},
+{key: 9, name: "RB_BUILD_MSRBS" , CL: 2, product: ["MSRBS"]},
+{key: 10, name: "NBC_MSRBS" , CL: 3, product: ["MSRBS"]},
+{key: 11, name: "Wait_For_Test_FOCUS_MSRBS" , CL: 3.5, product: ["MSRBS"]},
+{key: 12, name: "NBV_MSRBS_WCDMA_QA_Perforamnce" , CL: 4, product: ["MSRBS"]},
+{key: 13, name: "NBV_MSRBS_GSM_QA_Functionality" , CL: 4, product: ["MSRBS"]},
+{key: 14, name: "NBV_MSRBS_GSM_QA_Stability" , CL: 4, product: ["MSRBS"]},
+{key: 15, name: "NBV_MSRBS_GSM_QA_Configuration" , CL: 4, product: ["MSRBS"]},
+{key: 16, name: "NBV_MSRBS_GSM_QA_Upgrade" , CL: 4, product: ["MSRBS"]},
+{key: 17, name: "NBV_MSRBS_LTE_QA_Robustness" , CL: 4, product: ["MSRBS"]},
+{key: 18, name: "NBV_MSRBS_LTE_QA_Performance" , CL: 4, product: ["MSRBS"]},
+{key: 19, name: "NBV_MSRBS_LTE_QA_Capacity" , CL: 4, product: ["MSRBS"]},
+{key: 20, name: "NBV_MSRBS_LTE_QA_Functionality" , CL: 4, product: ["MSRBS"]},
+{key: 21, name: "NBV_MSRBS_LTE_QA_Stability" , CL: 4, product: ["MSRBS"]},
+{key: 22, name: "NBV_MSRBS_LTE_QA_Configuration" , CL: 4, product: ["MSRBS"]},
+{key: 23, name: "NBV_MSRBS_LTE_QA_Upgrade" , CL: 4, product: ["MSRBS"]},
+{key: 24, name: "Evaluation_MS_CL4" , CL: 4, product: ["MSRBS"]},
+{key: 25, name: "SDC_NCMAIN" , CL: 1, product: ["BASEBAND-T"]},
+{key: 26, name: "BDC_FRUM_BB_T" , CL: 2, product: ["BASEBAND-T"]},
+{key: 27, name: "BDC_AIS_GFF_BB_T", CL: 2, product: ["BASEBAND-T"]},
+{key: 28, name: "BDC_ARCHSUPP_PLAB_BB_T", CL: 2, product: ["BASEBAND-T"]},
+{key: 29, name: "BDC_ARCHSUPP_SFA_BB_T", CL: 2, product: ["BASEBAND-T"]},
+{key: 30, name: "BDC_RBSTCUNC_BB_T", CL: 2, product: ["BASEBAND-T"]},
+{key: 31, name: "NBC_BB_T" , CL: 3, product: ["BASEBAND-T"]},
+{key: 32, name: "WAIT_FOR_TEST_FOCUS_BB_T", CL: 3, product: ["BASEBAND-T"]},
+{key: 33, name: "NBV_CL4_BB_T_QA_ROBUSTNESS", CL: 4, product: ["BASEBAND-T"]},
+{key: 34, name: "NBV_CL4_BB_T_QA_PERFORMANCE", CL: 4, product: ["BASEBAND-T"]},
+{key: 35, name: "NBV_CL4_BB_T_QA_FUNCTIONALITY", CL: 4, product: ["BASEBAND-T"]},
+{key: 36, name: "NBV_CL4_BB_T_QA_CONFIGURE_OAM", CL: 4, product: ["BASEBAND-T"]},
+{key: 37, name: "NBV_CL4_BB_T_QA_CONFIGURE_UPGRADE", CL: 4, product: ["BASEBAND-T"]},
+{key: 38, name:"UP_BUILD_BB_T", CL:2, product: ["BASEBAND-T"]},
+{key: 39, name: "SOURCE_BBI", CL:0, product: ["MSRBS"]}];
 
 var edges_PFV=
 [{from: 0, to: 1},
@@ -298,20 +367,24 @@ var edges_PFV=
     for (var id in nodes_PFV) {
       var event = nodes_PFV[id];
       var status_arr=["success", "unstable", "fail"];
+      var rx,ry;
       var status=status_arr[Math.floor(Math.random()*3)];
       var className = status;
-      if (status=="fail") {
-        className += " warn";
-      }
+      // if (status=="fail") {
+      //   className += " warn";
+      // }
       className += " clickable";
-      var html = "<div>";
-      html += "<span class=status></span>";
-      html += "<div class=name>"+event.name+"</div>";
-    //  html += "<span class=queue>"+event.CL+"</span>";
-      html += "</div>";
-      var rx,ry;
       if(event.name.includes("SOURCE")) {className+=" source"; rx=880; ry=880;  }
       else {rx=5; ry=5;}
+      var products=["MSRBS","EMSRBSC2","VRAN","VTF","NR","BASEBAND-T"];
+      for(var prod=0;prod<products.length;prod++){
+        if(event.product.includes(products[prod])) {className+=" "+products[prod];}
+      }
+       var html = "<div>";
+      html += "<span class=\"status\"></span>";
+      html += "<div class=\"name\">"+event.name+"</div>";
+    //  html += "<span class=queue>"+event.CL+"</span>";
+      html += "</div>";
       g.setNode(event.key, {
         labelType: "html",
         label: html,
@@ -322,23 +395,12 @@ var edges_PFV=
         shape: "rect"
       });
 
-      if(event.name.includes("BDC")){
-        g.setParent(event.key, 'BDC');
-      }
-      else if(event.name.includes("SDC")){
-        g.setParent(event.key, 'SDC');
-      }
-      else if(event.name.includes("UP_BUILD")){
-        g.setParent(event.key, 'UP_BUILD');
-      }
-      else if(event.name.includes("RB_BUILD")){
-        g.setParent(event.key, 'RB_BUILD');
-      }
-      else if(event.name.includes("NBC")){
-        g.setParent(event.key, 'NBC');
-      }
-      else if(event.name.includes("NBV")){
-        g.setParent(event.key, 'NBV');
+      //Setting the clusters for alignment
+      for(var cluster=0;cluster<clusters.length;cluster++){
+        if(event.name.includes(clusters[cluster])){
+          g.setParent(event.key, clusters[cluster]);
+          break;
+        }
       }
 
     }
@@ -346,31 +408,25 @@ var edges_PFV=
     //edges
     for (var id in edges_PFV){
       var edge=edges_PFV[id];
+      var className="";
+      for(var prod=0;prod<products.length;prod++){
+        if(nodes_PFV[edge.from].product.includes(products[prod]) || nodes_PFV[edge.to].product.includes(products[prod]))
+          className+=" "+products[prod];
+      }
+      var html='<div class=\"'+className+'\"><text>'+Math.ceil(Math.random()*100)+' min'+'</text></div>';
       g.setEdge(edge.from,edge.to,{
-        label: Math.ceil(Math.random()*100) + " min",
+         labelType: "html",
+         label: html,
          width:40,
-         curve: d3.curveBasis
+         curve: d3.curveBasis,
+         class: className
        });
     }
 
     inner.call(render, g);
 
-/*    inner.selectAll(".clickable:not(.update)").on("click", function(d) {
-      alert("You clicked on " + d);
-    })*/
 
     // Zoom and scale to fit
-/*    var zoomScale = zoom.scale();
-    var graphWidth = g.graph().width + 80;
-    var graphHeight = g.graph().height + 40;
-    var width = parseInt(svg.style("width").replace(/px/, ""));
-    var height = parseInt(svg.style("height").replace(/px/, ""));
-    zoomScale = Math.min(width / graphWidth, height / graphHeight);
-    var translate = [(width/2) - ((graphWidth*zoomScale)/2), (height/2) - ((graphHeight*zoomScale)/2)];
-    zoom.translate(translate);
-    zoom.scale(zoomScale);
-    zoom.event(isUpdate ? svg.transition().duration(500) : d3.select("svg"));*/
-
     var graphWidth = g.graph().width + 80;
     var graphHeight = g.graph().height + 40;
     var width = parseInt(svg.style("width").replace(/px/, ""));
@@ -385,4 +441,28 @@ var edges_PFV=
 
 
   document.addEventListener("DOMContentLoaded", draw);
+
+    $(document).ready(function(){
+    $('#MSRBS').click(function(){
+    $(".MSRBS").css("opacity","1");
+    $(".EMSRBSC2, .NR, .BASEBAND-T, .G3, .VTF, .TIF, .VRAN, .VRAN2_0").css("opacity","0.05");
+       });
+
+    $('#NR').click(function(){
+    $(".NR").css("opacity","1");
+    $(".EMSRBSC2, .MSRBS, .BASEBAND-T, .G3, .VTF, .TIF, .VRAN, .VRAN2_0").css("opacity","0.05");
+       });
+
+    $('#BASEBAND-T').click(function(){
+    $(".BASEBAND-T").css("opacity","1");
+    $(".EMSRBSC2, .MSRBS, .NR, .G3, .VTF, .TIF, .VRAN, .VRAN2_0").css("opacity","0.05");
+       });
+  });
+
 </script>
+</body>
+
+
+
+
+
