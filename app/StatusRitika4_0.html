@@ -1,0 +1,66 @@
+
+<!-- This file contains Version 2.0 + alignment based on job type + Updated the dagre-library commands for v5 + d3v4 + fading out based on solution + modularization-->
+<!-- Check this for the top navigation bar: https://designmodo.com/create-drop-down-menu-search-box/ -->
+
+<!doctype html>
+
+<meta charset="utf-8">
+<title>CI Flow Visualization</title>
+<head>
+<link rel="stylesheet" type="text/css" href="css/main_style.css">
+ <link rel="stylesheet" href="cssmenu/styles.css">
+
+
+<div class="ebSystemBara">
+     <div class="ebSystemBar-logo"></div>
+     <div class="ebSystemBar-topMenuName">
+         <a class="headingtextcolor"> <b>CI FLOW VISUALIZATION</b></a>
+         <select id="ran" style="width: 300px; margin: 0 200px;">
+         <option value="All" id="All">All</option>
+         <option value="BASEBAND-T" id="BASEBAND-T">BASEBAND-T</option>
+         <option value="EMSRBSC2" id="EMSRBSC2">EMSRBSC2</option>
+         <option value="G3" id="G3">G3</option>
+         <option value="MSRBS" id="MSRBS">MSRBS</option>
+         <option value="NR" id="NR">NR</option>
+         <option value="TIF" id="TIF">TIF</option>
+         <option value="VRAN" id="VRAN">VRAN</option>
+         <option value="VRAN2_0" id="VRAN2_0">VRAN2_0</option>
+         <option value="VTF" id="VTF">VTF</option>
+         <option value="VeRC" id="VeRC">VeRC</option></select>
+
+         <form method="get" action="/search" id="search" style="display: inline">
+         <input name="q" type="text" size="40" placeholder="Enter your TR/Commit ID..." />
+        </form>
+
+     </div>
+:
+ </div>
+</head>
+
+<body>
+<div class="top-menu"></div>
+<div class="live map">
+  <svg><g/></svg>
+</div>
+
+
+<script>
+  //top navigation bar
+  // $(".top-menu").load("cssmenu/menu.html");
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js" charset="utf-8"></script>
+<!-- <script src="../dagre-d3-0.5.0/dagre-d3-0.5.0/build/dist/dagre-d3.min.js"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dagre-d3/0.5.0/dagre-d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="js/search.js"></script>
+<script src="js/drawGraph.js"></script>
+<script src="js/fading.js"></script>
+<!-- <script src="js/dragging.js"></script> -->
+</body>
+
+
+
+
+

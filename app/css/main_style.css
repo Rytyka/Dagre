@@ -1,0 +1,213 @@
+body {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-family: "Ericsson Hilda", Helvetica, Arial, sans-serif;
+    background: #333;
+    word-break: break-all;
+
+  }
+
+  @-webkit-keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+
+    25%, 75% {
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes flash {
+    0%, 50%, 100% {
+      opacity: 1;
+    }
+
+    25%, 75% {
+      opacity: 0.2;
+    }
+  }
+
+  .warn {
+    -webkit-animation-duration: 5s;
+    animation-duration: 5s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-iteration-count: 2;
+    animation-iteration-count: 2;
+  }
+
+  .fade{
+    opacity: 0.05;
+  }
+
+  .live.map {
+    width: 100%;
+    height: 100%;
+
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .live.map text {
+    font-weight: 300;
+    font-size: 18px;
+    text-align: center;
+  }
+
+   .clusters rect {
+  fill: #00ffd0;
+  stroke: #999;
+  stroke-width: 1.5px;
+  opacity:0.001;
+}
+
+  .live.map .node rect {
+    stroke-width: 1.5px;
+    stroke: #bbb;
+    fill: #666;
+  }
+
+  .live.map .status {
+    height: 100%;
+    width: 15px;
+    display: block;
+    float: left;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  /*  margin-right:4px;*/
+    }
+
+  .live.map .success .status {
+    background-color: #7f7; //green
+  }
+
+  .live.map .node .label .name{
+    text-align:center;
+    display: block;
+    word-break:break-all;
+  }
+
+  .live.map .unstable .status {
+    background-color: #ffed68; //mustard
+  }
+
+  .live.map .fail .status {
+    background-color: #f77; //red
+  }
+
+    .live.map .source .status {
+    visibility: hidden;
+     }
+
+  .warn {
+    -webkit-animation-name: flash;
+    animation-name: flash;
+  }
+
+  .live.map .queue {
+   /* display: block;*/
+    display:none;
+    float: left;
+    width: 130px;
+    height: 20px;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+/*   .live.map .node.source g div {
+  width: 100px;
+  height: 90px;
+  color: #fff;
+  background-image: url('images/try.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+} */
+
+  .live.map .node g div {
+    width: 300px;
+    height: 40px;
+    color: #fff;
+  }
+
+  .live.map .clusters .label text{
+    opacity:0.001;
+  }
+  .live.map .edgeLabel text {
+    width: 50px;
+    fill: #fff;
+    color: #fff;
+  }
+
+  .live.map .edgePath path {
+    stroke: #999;
+    stroke-width: 1.5px;
+    fill: #999;
+  }
+
+  .ebSystemBar-topMenuName {
+    display: inline-block;
+    font-family: EricssonCapitalTT;
+    padding: 0 5px 0 40px;
+    margin: 0;
+    line-height: 40px;
+    font-size: 16.8px;
+    color: #0C0C0C;
+  }
+  .ebSystemBara {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    z-index: 1500;
+    border-top: 4px solid #0066b3;
+    background-color: #0C0C0C;
+  }
+
+  .headingtextcolor{
+    font-size: 16.8px;
+    color: #FFFFFF;
+  }
+
+
+
+#search input[type="text"] {
+    background: url(../images/search-white.png) no-repeat 10px 6px #444;
+    border: 0 none;
+    font: bold 12px Arial,Helvetica,Sans-serif;
+    color: #d7d7d7;
+    width:180px;
+    padding: 6px 15px 6px 35px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    text-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 3px rgba(0, 0, 0, 0.2) inset;
+    -webkit-transition: all 0.7s ease 0s;
+    -moz-transition: all 0.7s ease 0s;
+    -o-transition: all 0.7s ease 0s;
+    transition: all 0.7s ease 0s;
+    }
+
+#search input[type="text"]:focus {
+    background: url(../images/search-dark.png) no-repeat 10px 6px #fcfcfc;
+    color: #6a6f75;
+    width: 220px;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(0, 0, 0, 0.9) inset;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+
+
+ /*  .MSRBS rect, .MSRBS.status, .edgePath.MSRBS path,marker{
+   opacity: 0.1;
+ } */
